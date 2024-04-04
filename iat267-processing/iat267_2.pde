@@ -8,6 +8,9 @@ Serial port;
 // Monster objects
 Monster monster;
 
+//radar object
+Radar radar;
+
 // Sensor values
 int valP_force; 
 int valP_light;
@@ -31,6 +34,7 @@ boolean setupLost = false;
 void setup() {
   size(1400,800);
   monster = new Monster(new PVector(width / 2, height / 2));
+  radar = new Radar();
   
   // Load font
   PFont font = loadFont("FuturaBT-Book-48.vlw");
@@ -48,7 +52,9 @@ void draw() {
   background(50);
   
   if (port.available()>0){
-    port.readBytesUntil('&', inBuffer); //read in all the data until '&' is encountered
+    //port.readBytesUntil('&', inBuffer); //read in all the data until '&' is encountered
+    port.readBytesUntil('&'); //read in all the data until '&' is encountered
+
     
     if (inBuffer != null){
       String myString = new String(inBuffer);
@@ -94,10 +100,15 @@ void draw() {
           
         } else {
         return;
-        } //exit this function if packet is broken
+        } //exit this function if light sensor packet is broken
+        
+        /*
+        servo motor reading
+        */
+        String[] servo_motor = readSensorValues(p, "c", "servo motor values in String: ");
         
       } else {
-        return;
+        return; //exit if inBuffer is null.
       }
       
         // Switches the level based on current_level
