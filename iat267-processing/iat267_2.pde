@@ -62,24 +62,38 @@ void draw() {
         Force Sensor
       */
       String[] force_sensor = readSensorValues(p, "a", "Force sensor in String:");
+      String[] light_sensor = readSensorValues(p, "b", "Light sensor in String:"); 
+      //String[] force_sensor = splitTokens(p[0], "a"); //get force sensor reading
+      //String[] light_sensor = splitTokens(p[0], "b");  //get light sensor reading 
+      
+      if (force_sensor.length != 3) return; //exit this function if packet is broken
       valP_force = int(force_sensor[0]);
+      
+      if (light_sensor.length != 3) return;  //exit this function if packet is broken
+      valP_light = int(light_sensor[0]);
+      
       print("force sensor in int:");
       print(valP_force);
       println(" ");
       monster.inflictDamage(valP_force);
-      valP_force = int(force_sensor[1]);
-      if (force_sensor.length != 3) return; //exit this function if packet is broken
+      
+      print("light sensor in int:");
+      print(valP_light);
+      println(" "); 
+
       
       /*
         Light Sensor reading
       */  
-      String[] light_sensor = readSensorValues(p, "b", "Light sensor in String:");   
-      if (light_sensor.length != 3) return;  //exit this function if packet is broken
-      valP_light = int(light_sensor[0]);
+      //String[] light_sensor = readSensorValues(p, "b", "Light sensor in String:");   
+      ////String[] light_sensor = splitTokens(p[0], "b");  //get light sensor reading 
 
-      print("light sensor in int:");
-      print(valP_light);
-      println(" "); 
+      //if (light_sensor.length != 3) return;  //exit this function if packet is broken
+      //valP_light = int(light_sensor[1]);
+
+      //print("light sensor in int:");
+      //print(valP_light);
+      //println(" "); 
       
       
               
