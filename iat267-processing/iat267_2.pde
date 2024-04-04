@@ -52,8 +52,8 @@ void draw() {
   background(50);
   
   if (port.available()>0){
-    //port.readBytesUntil('&', inBuffer); //read in all the data until '&' is encountered
-    port.readBytesUntil('&'); //read in all the data until '&' is encountered
+    port.readBytesUntil('&', inBuffer); //read in all the data until '&' is encountered
+    //port.readBytesUntil('&'); //read in all the data until '&' is encountered
 
     
     if (inBuffer != null){
@@ -102,14 +102,16 @@ void draw() {
         return;
         } //exit this function if light sensor packet is broken
         
-        /*
-        servo motor reading
-        */
-        String[] servo_motor = readSensorValues(p, "c", "servo motor values in String: ");
+
         
       } else {
         return; //exit if inBuffer is null.
       }
+      
+      /*
+        servo motor reading
+      */
+
       
         // Switches the level based on current_level
       switchLevel();
@@ -154,6 +156,7 @@ void drawEventTextBox(String message) {
 void switchLevel() {
   switch (current_level) {
     case INTRO: {
+      radar.update();
       drawStoryTextBox("Make the spider move to shine the wall...");
       if (valP_light > 250) current_level = LEVEL_ONE;
       break;

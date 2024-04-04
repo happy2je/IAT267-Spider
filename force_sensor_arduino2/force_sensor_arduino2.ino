@@ -48,34 +48,33 @@ void loop() {
   //'b' packet ends
 
 
-  //'c' packet starts (servo)
+  Serial.print("&"); //denotes the end from the sensors
+  delay(100); //wait 100ms for next reading 
+
+
+//'c' packet starts (servo)
   for(int i=10;i<=170;i++){  
     myServo.write(i);
     delay(30);
     distance = calculateDistance();// Calls a function for calculating the distance  by the Ultrasonic sensor for each degree
-    Serial.print("c");
+    // Serial.print("c");
     Serial.print(i); // Sends the current degree into the Serial Port
     Serial.print(","); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
     Serial.print(distance); // Sends the distance value into the Serial Port
-    Serial.print("c"); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
+    Serial.print("."); // Sends addition character right next to the previous value needed later in the Processing IDE for indexing
   }
    // Going back
   for(int i=170;i>10;i--){  
     myServo.write(i);
     delay(30);
     distance = calculateDistance();
-    Serial.print("c");
+    // Serial.print("c");
     Serial.print(i);
     Serial.print(",");
     Serial.print(distance);
-    Serial.print("c");
+    Serial.print(".");
   }
   //'c' packet ends
-
-  Serial.print("&"); //denotes the end from the sensors
-  delay(100); //wait 100ms for next reading 
-
-
 
 }
 

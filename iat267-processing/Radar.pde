@@ -1,3 +1,8 @@
+import processing.serial.*; // imports library for serial communication
+import java.awt.event.KeyEvent; // imports library for reading the data from the serial port
+import java.io.IOException;
+
+
 class Radar {
 
   // defubes variables
@@ -14,7 +19,45 @@ class Radar {
   //radar constructor
   Radar(){
     orcFont = loadFont("Osaka-48.vlw");
+
+    
+
   }
+
+  
+  void update() {
+  port.bufferUntil('.'); // reads the data from the serial port up to the character '.'. So actually it reads this: angle,distance.
+
+  
+  fill(98,245,31);
+  textFont(orcFont);
+  // simulating motion blur and slow fade of the moving line
+  noStroke();
+  fill(0,4); 
+  rect(0, 0, width, height-height*0.065); 
+  
+  fill(98,245,31); // green color
+  // calls the functions for drawing the radar
+  drawRadar(); 
+  drawLine();
+  drawObject();
+  drawText();
+}
+
+void serialEvent (Serial myPort) { // starts reading data from the Serial Port
+  // reads the data from the Serial Port up to the character '.' and puts it into the String variable "data".
+  data = myPort.readStringUntil('.');
+  data = data.substring(0,data.length()-1);
+  
+  index1 = data.indexOf(","); // find the character ',' and puts it into the variable "index1"
+  angle= data.substring(0, index1); // read the data from position "0" to position of the variable index1 or thats the value of the angle the Arduino Board sent into the Serial Port
+  distance= data.substring(index1+1, data.length()); // read the data from position "index1" to the end of the data pr thats the value of the distance
+  
+  // converts the String variables into Integer
+  iAngle = int(angle);
+  iDistance = int(distance);
+}
+  
     
   void drawRadar() {
     pushMatrix();
