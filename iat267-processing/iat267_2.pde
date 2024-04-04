@@ -55,53 +55,58 @@ void draw() {
       
       //p is all the sensor data (with a's and b's) ('&' is eliminated)
       String[] p = splitTokens(myString, "&");
-      println(p);
-      if (p.length < 2) return; //exit this function is packet is broken
-      
-      /*
-        Force Sensor
-      */
-      String[] force_sensor = readSensorValues(p, "a", "Force sensor in String:");
-      String[] light_sensor = readSensorValues(p, "b", "Light sensor in String:"); 
-      //String[] force_sensor = splitTokens(p[0], "a"); //get force sensor reading
-      //String[] light_sensor = splitTokens(p[0], "b");  //get light sensor reading 
-      
-      if (force_sensor.length != 3) return; //exit this function if packet is broken
-      valP_force = int(force_sensor[0]);
-      
-      if (light_sensor.length != 3) return;  //exit this function if packet is broken
-      valP_light = int(light_sensor[0]);
-      
-      print("force sensor in int:");
-      print(valP_force);
-      println(" ");
-      monster.inflictDamage(valP_force);
-      
-      print("light sensor in int:");
-      print(valP_light);
-      println(" "); 
 
+      if (p.length == 2 || p.length > 2){ //exit this function is packet is broken
+        println(p);
+        /*
+          Force Sensor
+        */
+        String[] force_sensor = readSensorValues(p, "a", "Force sensor in String:");
+        //String[] force_sensor = splitTokens(p[0], "a"); //get force sensor reading
+        print("force sensor String length: ");
+        println(force_sensor.length);
+        if (force_sensor.length == 2){ //exit this function if packet is broken
+          println("this means force_sensor.length is 2");
+          valP_force = int(force_sensor[0]);
+          print("force sensor in int:");
+          print(valP_force);
+          println(" ");
+          monster.inflictDamage(valP_force);
+        } else {
+          return;
+        }
+        //valP_force = int(force_sensor[1]);
+        
+        
+        /*
+          Light Sensor reading
+        */  
+        String[] light_sensor = readSensorValues(p, "b", "Light sensor in String:");
+        print("light sensor String length: ");
+        println(light_sensor.length);
+        if (light_sensor.length == 3){
+        
+          valP_light = int(light_sensor[1]);
+    
+          print("light sensor in int:");
+          print(valP_light);
+          println(" "); 
+          
+        } else {
+        return;
+        } //exit this function if packet is broken
+        
+      } else {
+        return;
+      }
       
-      /*
-        Light Sensor reading
-      */  
-      //String[] light_sensor = readSensorValues(p, "b", "Light sensor in String:");   
-      ////String[] light_sensor = splitTokens(p[0], "b");  //get light sensor reading 
-
-      //if (light_sensor.length != 3) return;  //exit this function if packet is broken
-      //valP_light = int(light_sensor[1]);
-
-      //print("light sensor in int:");
-      //print(valP_light);
-      //println(" "); 
-      
-      
+        // Switches the level based on current_level
+      switchLevel();
               
     }
   }
   
-  // Switches the level based on current_level
-  switchLevel();
+
 }
 
 // Get the sensor data of a specific code and return it
