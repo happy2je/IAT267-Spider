@@ -17,8 +17,8 @@ class Spider {
     //dim = new PVector(550, 550);
     isDead = false;
     
-    movement1 = loadImage("data/monster1.png");
-    movement2 = loadImage("data/monster2.png");    
+    movement1 = loadImage("data/spider1.png");
+    movement2 = loadImage("data/spider2.png");    
   }
 
   void update(int size) {
@@ -40,12 +40,12 @@ class Spider {
     imageMode(CENTER);
     PImage currentImg;
     currentImg = movement1;
-    // Change the monster frames every ANIMATION_SPEED ms
-    //if ((millis() / ANIMATION_SPEED) % 2 == 0) {
-    //  currentImg = movement1;
-    //} else {
-    //  currentImg = movement2;
-    //}
+//     Change the monster frames every ANIMATION_SPEED ms
+    if ((millis() / ANIMATION_SPEED) % 2 == 0) {
+      currentImg = movement1;
+    } else {
+      currentImg = movement2;
+    }
     
      if (currentImg != null) {
     image(currentImg, 0, 0, size, size);

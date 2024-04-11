@@ -1,14 +1,16 @@
 // Libraries
 import ddf.minim.*;
 import processing.serial.*;
-import processing.video.*;
+//import processing.video.*;
 
 // Port
 Serial port;
 
+Camera myCamera;
 
-//video
-Capture video;
+
+
+
 
 // Monster objects
 Monster monster;
@@ -43,8 +45,8 @@ void setup() {
   size(1400,800);
   monster = new Monster(new PVector(width / 2, height / 2));
   spider = new Spider(new PVector(width / 2, height / 2));
-  video = new Capture(this, 640, 480, 30);
-  video.start();
+  myCamera = new Camera(this, width/3, height/3); //how big is the camera?
+  //video.start();
   radar = new Radar();
   
   // Load font
@@ -170,12 +172,9 @@ void switchLevel() {
   switch (current_level) {
     case INTRO: {
       //radar.update();
-      if (video.available()){
-        video.read();
-      }
-      tint(255, mouseY, mouseY);
-      image(video, 0, 0, mouseX, mouseY);
-      spider.update(valP_light);
+      myCamera.update();
+
+      spider.update(valP_light*2); //how big is the spider?
       drawStoryTextBox("Make the spider move to shine the wall...");
       if (valP_light > LIGHT_THRESHOLD) current_level = LEVEL_ONE; 
       break;
@@ -190,6 +189,8 @@ void switchLevel() {
       break;
   }
 }
+
+
 
 // Draw level 1 text box
 void displayLevelOne() {

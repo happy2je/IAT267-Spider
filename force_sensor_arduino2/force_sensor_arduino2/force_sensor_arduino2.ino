@@ -16,7 +16,7 @@ int servoPos = 0;
 // Ultrasonic sensor
 const int TRIG_PIN = 9;
 const int ECHO_PIN = 10;
-const int OPEN_TIME = 5000;
+const int OPEN_TIME = 10000;
 
 long duration;
 int distance;
