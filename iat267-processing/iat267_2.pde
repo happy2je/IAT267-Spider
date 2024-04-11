@@ -7,6 +7,7 @@ Serial port;
 
 // Monster objects
 Monster monster;
+Spider spider;
 
 //radar object
 Radar radar;
@@ -14,6 +15,7 @@ Radar radar;
 // Sensor values
 int valP_force; 
 int valP_light;
+int LIGHT_THRESHOLD = 240;
 
 // Misc
 int time = 0;
@@ -22,6 +24,7 @@ int time = 0;
 final int INTRO = 0;
 final int LEVEL_ONE = 1;
 int current_level;
+
 
 byte[] inBuffer = new byte[255]; // Size of the serial buffer to allow for end of data characters and all chars (see arduino code)
 
@@ -34,6 +37,8 @@ boolean setupLost = false;
 void setup() {
   size(1400,800);
   monster = new Monster(new PVector(width / 2, height / 2));
+  spider = new Spider(new PVector(width / 2, height / 2));
+
   radar = new Radar();
   
   // Load font
@@ -45,11 +50,11 @@ void setup() {
   
   //open the port that the board's connected to & use the same speed (9600 bps)
   println(Serial.list());
-  port = new Serial(this,Serial.list()[1],9600);
+  port = new Serial(this,Serial.list()[4],9600);
 }
 
 void draw() {
-  background(50);
+
   
   if (port.available()>0){
     port.readBytesUntil('&', inBuffer); //read in all the data until '&' is encountered
@@ -112,13 +117,15 @@ void draw() {
         servo motor reading
       */
 
-      
+      background(50);
         // Switches the level based on current_level
       switchLevel();
               
     }
-  }
+       
   
+  }
+
 
 }
 
@@ -156,9 +163,10 @@ void drawEventTextBox(String message) {
 void switchLevel() {
   switch (current_level) {
     case INTRO: {
-      radar.update();
+      //radar.update();
+      spider.update(valP_light);
       drawStoryTextBox("Make the spider move to shine the wall...");
-      if (valP_light > 250) current_level = LEVEL_ONE;
+      if (valP_light > LIGHT_THRESHOLD) current_level = LEVEL_ONE; 
       break;
     }
     case LEVEL_ONE: {
