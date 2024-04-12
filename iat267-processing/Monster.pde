@@ -31,6 +31,7 @@ class Monster {
   
   // Monster takes damage  
   void inflictDamage(int damage) {
+    beep.play();
     damage /= MONSTER_RESISTANCE;
     currentHealth -= damage;
     

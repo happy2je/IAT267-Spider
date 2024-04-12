@@ -9,7 +9,13 @@ Serial port;
 Camera myCamera;
 
 
-
+// sounds
+Minim minim;
+AudioPlayer cave, walk, combat, beep;
+final String CAVE = "data/cave.mp3";
+final String WALK = "data/walking5.wav";
+final String COMBAT = "data/combat.mp3";
+final String BEEP = "data/beep.mp3";
 
 
 // Monster objects
@@ -173,6 +179,14 @@ void switchLevel() {
     case INTRO: {
       //radar.update();
       myCamera.update();
+      
+    // sounds
+    cave.play();
+    cave.loop();
+
+    if (valP_light > 100){
+      walk.play();
+    }
 
       spider.update(valP_light*2); //how big is the spider?
       drawStoryTextBox("Make the spider move to shine the wall...");
@@ -180,6 +194,7 @@ void switchLevel() {
       break;
     }
     case LEVEL_ONE: {
+      combat.play();
       monster.update();
       displayLevelOne();
       break;
@@ -200,3 +215,27 @@ void displayLevelOne() {
     drawStoryTextBox("You have defeated the monster! Move on.");
   }
 }
+
+//loading the audio files 
+void loadSound() {
+  minim = new Minim(this);
+  cave = minim.loadFile(CAVE);
+  walk = minim.loadFile(WALK);
+  combat = minim.loadFile(COMBAT);
+  beep = minim.loadFile(BEEP);
+}
+
+
+/*
+//for playing the sound effect files
+void playSound(String file) {
+  AudioPlayer sound = null;
+  switch(file) {
+    case LASER:
+      sound = laser;
+      break;
+  
+    default: //do nothing
+  }
+  sound.play(0);
+}*/
