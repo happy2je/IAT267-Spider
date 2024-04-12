@@ -74,16 +74,23 @@ void loop() {
   distance = duration * 0.034 / 2;
   Serial.print(distance);
 
-  // Trigger servo to 180 degrees if it's within distance range and back to 0 after x seconds
-  if (distance <= 20 && distance >= 0) {
-    servo.write(180);
-    // print("Servo triggered at distance: ");
+
+  Serial.print("c");
+  Serial.println();
+
+  Serial.print("d");
+    String message = Serial.readStringUntil('\n');
+    if (message.equals("trigger_servo")) {
+    // Trigger servo to 180 degrees if it's within distance range and back to 0 after x seconds
+//  if (distance <= 10 && distance >= 0) {
+    servo.write(90);
+    //println("Servo triggered at distance: ");
     // println(distance);
     delay(OPEN_TIME);
     servo.write(0);
     delay(20);
   }
-  Serial.print("c");
+  Serial.print("d");
   Serial.println();
 
   Serial.print("&"); //denotes the end from the sensors

@@ -14,8 +14,11 @@ class Camera{
   
   Camera(PApplet parent, int x, int y){ //how big is the camera?
     this.parent = parent;
-    video = new Capture(parent, x, y);
-    //video.start();
+    println(Capture.list());
+    //FaceTime HD Camera USB Camera VID:1133 PID:2077 OBS Virtual Camera
+    video = new Capture(parent, x, y, "USB Camera VID:1133 PID:2077");
+    //video = new Capture(parent, Capture.list()[0], x, y);
+    video.start();
   }
   
   void update(){
@@ -27,12 +30,15 @@ class Camera{
 //     image(video, parent.width-100, parent.width-100);
      colorTrack();
     //tint(255, mouseY, mouseY);
-      image(video, parent.width-video.width, parent.height-video.height); //where is the camera?
+    pushMatrix();
+      scale(-1,1);
+      image(video, -video.width, parent.height-video.height); //where is the camera?
+    popMatrix();
 
 }
   
   void mousePressed() {
-  // Save color where the mouse is clicked in trackColor variable
+  // Save color where the mouse is cliccked in trackColor variable
   int loc = mouseX + mouseY*video.width;
   trackColor = video.pixels[loc];
 }

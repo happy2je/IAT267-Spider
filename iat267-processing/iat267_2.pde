@@ -21,6 +21,7 @@ final String BEEP = "data/beep.mp3";
 // Monster objects
 Monster monster;
 Spider spider;
+Apple apple;
 
 //radar object
 Radar radar;
@@ -28,7 +29,8 @@ Radar radar;
 // Sensor values
 int valP_force; 
 int valP_light;
-int LIGHT_THRESHOLD = 240;
+int valP_ultrasonic;
+int LIGHT_THRESHOLD = 230;
 
 // Misc
 int time = 0;
@@ -36,6 +38,8 @@ int time = 0;
 // Game states/levels
 final int INTRO = 0;
 final int LEVEL_ONE = 1;
+final int LEVEL_TWO = 2; 
+final int LEVEL_THREE = 3; 
 int current_level;
 
 
@@ -54,6 +58,8 @@ void setup() {
   myCamera = new Camera(this, width/3, height/3); //how big is the camera?
   //video.start();
   radar = new Radar();
+  apple = new Apple(new PVector(width / 2, height / 2));
+
   
   // Load font
   PFont font = loadFont("FuturaBT-Book-48.vlw");
@@ -86,26 +92,29 @@ void draw() {
         /*
           Force Sensor
         */
-        String[] force_sensor = readSensorValues(p, "a", "Force sensor in String:");
-        //String[] force_sensor = splitTokens(p[0], "a"); //get force sensor reading
-        print("force sensor String length: ");
-        println(force_sensor.length);
-        if (force_sensor.length == 2){ //exit this function if packet is broken
-          println("this means force_sensor.length is 2");
-          valP_force = int(force_sensor[0]);
-          print("force sensor in int:");
-          print(valP_force);
-          println(" ");
-          monster.inflictDamage(valP_force);
-        } else {
-          return;
+        if (current_level == LEVEL_ONE || current_level == LEVEL_THREE){
+          String[] force_sensor = readSensorValues(p, "a", "Force sensor in String:");
+          //String[] force_sensor = splitTokens(p[0], "a"); //get force sensor reading
+          print("force sensor String length: ");
+          println(force_sensor.length);
+          if (force_sensor.length == 2){ //exit this function if packet is broken
+            println("this means force_sensor.length is 2");
+            valP_force = int(force_sensor[0]);
+            print("force sensor in int:");
+            print(valP_force);
+            println(" ");
+            monster.inflictDamage(valP_force);
+            apple.inflictDamage(valP_force);
+          } else {
+            return;
+          }
+          //valP_force = int(force_sensor[1]);
         }
-        //valP_force = int(force_sensor[1]);
-        
         
         /*
           Light Sensor reading
         */  
+      if (current_level == INTRO){
         String[] light_sensor = readSensorValues(p, "b", "Light sensor in String:");
         print("light sensor String length: ");
         println(light_sensor.length);
@@ -120,16 +129,32 @@ void draw() {
         } else {
         return;
         } //exit this function if light sensor packet is broken
+      }
+      /*
+        servo motor reading
+      */
+      
+      if (current_level == LEVEL_TWO){
+        String[] ultrasonic_sensor = readSensorValues(p, "c", "Ultrasonic sensor in String:");
+        print("ultrasonic sensor String length: ");
+        println(ultrasonic_sensor.length);
+        if (ultrasonic_sensor.length == 3){
         
-
-        
+          valP_ultrasonic = int(ultrasonic_sensor[1]);
+    
+          print("ultrasonic sensor in int:");
+          print(valP_ultrasonic);
+          println(" "); 
+          
+        } else {
+        return;
+        } //exit this function if light sensor packet is broken
+      }
+       
       } else {
         return; //exit if inBuffer is null.
       }
       
-      /*
-        servo motor reading
-      */
 
       background(50);
         // Switches the level based on current_level
@@ -181,11 +206,11 @@ void switchLevel() {
       myCamera.update();
       
     // sounds
-    cave.play();
-    cave.loop();
+    //cave.play();
+    //cave.loop();
 
     if (valP_light > 100){
-      walk.play();
+      //walk.play();
     }
 
       spider.update(valP_light*2); //how big is the spider?
@@ -194,10 +219,25 @@ void switchLevel() {
       break;
     }
     case LEVEL_ONE: {
-      combat.play();
+      //combat.play();
       monster.update();
       displayLevelOne();
       break;
+    }
+    case LEVEL_TWO: { //servomotor stage (the spider becomes larger as it gets closer to the servomotor)
+      drawStoryTextBox("You have defeated the monster! Move on.");
+      if (valP_ultrasonic <= 25) {
+        current_level = LEVEL_THREE;
+        port.write("trigger_servo");
+        delay(100);
+      }
+      break;
+      
+    }
+    case LEVEL_THREE: { //servomotor's triggered & door opened. Eat the apple. 
+      apple.update();
+      break;
+      
     }
     default:
       print("Invalid state found. Please try again");
@@ -212,7 +252,7 @@ void displayLevelOne() {
   if (!monster.isDead) {
     drawEventTextBox("OH NO! The monster is on your way! Press the Force Sensor on the robot to attack the monster.");
   } else {
-    drawStoryTextBox("You have defeated the monster! Move on.");
+    current_level = LEVEL_TWO;
   }
 }
 
