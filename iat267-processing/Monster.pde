@@ -2,7 +2,7 @@ class Monster {
   final int ANIMATION_SPEED = 500; // monster animation speed in milliseconds
   final int HEALTH_BAR_WIDTH = 900;
   final int HEALTH_BAR_HEIGHT = 40;
-  final int MONSTER_RESISTANCE = 100; //use this to make the monster stronger
+  final int MONSTER_RESISTANCE = 50; //use this to make the monster stronger
   
   PVector pos, dim;
   boolean isDead;
@@ -31,13 +31,19 @@ class Monster {
   
   // Monster takes damage  
   void inflictDamage(int damage) {
+   // beep.play();
     damage /= MONSTER_RESISTANCE;
     currentHealth -= damage;
     
     if (currentHealth <= 0) {
       isDead = true;
     }
+    
+     // Play beep sound only when force sensor is pressed\
+     if (damage > 0) {
+    beep.play();
   }
+ }
   
   // Draws the monster with alternating frames
   void drawCharacter() {
