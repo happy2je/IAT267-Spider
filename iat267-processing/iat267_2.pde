@@ -30,16 +30,19 @@ Radar radar;
 int valP_force; 
 int valP_light;
 int valP_ultrasonic;
-int LIGHT_THRESHOLD = 230;
+int LIGHT_THRESHOLD = 250;
 
 // Misc
 int time = 0;
 
 // Game states/levels
+final int HOWTO = -1;
 final int INTRO = 0;
 final int LEVEL_ONE = 1;
 final int LEVEL_TWO = 2; 
-final int LEVEL_THREE = 3; 
+final int LEVEL_THREE = 3;
+final int FINISH = 4; 
+
 int current_level;
 
 
@@ -52,7 +55,8 @@ boolean setupWon = false;
 boolean setupLost = false;
 
 void setup() {
-  size(1400,800);
+  //size(1400,800);
+  fullScreen();
   monster = new Monster(new PVector(width / 2, height / 2));
   spider = new Spider(new PVector(width / 2, height / 2));
   myCamera = new Camera(this, width/3, height/3); //how big is the camera?
@@ -66,11 +70,13 @@ void setup() {
   textFont(font, height/20);
   
   // Set level
-  current_level = INTRO;
+  current_level = HOWTO;
   
   //open the port that the board's connected to & use the same speed (9600 bps)
   println(Serial.list());
   port = new Serial(this,Serial.list()[2],9600);
+  
+    loadSound();
 }
 
 void draw() {
@@ -157,6 +163,9 @@ void draw() {
       
 
       background(50);
+       PImage background = loadImage("data/cave1.png");
+      background.resize(width, height);
+      background(background);
         // Switches the level based on current_level
       switchLevel();
               
@@ -201,32 +210,44 @@ void drawEventTextBox(String message) {
 // Based on the current_level, it runs a specific 
 void switchLevel() {
   switch (current_level) {
+    case HOWTO: {
+      PImage howto = loadImage("data/howto.png");
+      howto.resize(width, height);
+      background(howto);
+      if (mousePressed) {
+        current_level = INTRO;
+      }
+      break;
+    }
     case INTRO: {
       //radar.update();
       myCamera.update();
+     
       
     // sounds
-    //cave.play();
+    cave.play();
     //cave.loop();
 
-    if (valP_light > 100){
-      //walk.play();
+    if (valP_light > 0){
+      walk.play();
     }
 
-      spider.update(valP_light*2); //how big is the spider?
+      spider.update(valP_light*3); //how big is the spider?
       drawStoryTextBox("Make the spider move to shine the wall...");
       if (valP_light > LIGHT_THRESHOLD) current_level = LEVEL_ONE; 
       break;
     }
     case LEVEL_ONE: {
-      //combat.play();
+      combat.play();
       monster.update();
       displayLevelOne();
       break;
     }
     case LEVEL_TWO: { //servomotor stage (the spider becomes larger as it gets closer to the servomotor)
       drawStoryTextBox("You have defeated the monster! Move on.");
-      if (valP_ultrasonic <= 25) {
+      myCamera.update();
+        delay(300);
+      if (valP_ultrasonic <= 5) {
         current_level = LEVEL_THREE;
         port.write("trigger_servo");
         delay(100);
@@ -235,9 +256,20 @@ void switchLevel() {
       
     }
     case LEVEL_THREE: { //servomotor's triggered & door opened. Eat the apple. 
-      apple.update();
-      break;
-      
+    
+    if (apple.isDead) {
+      current_level = FINISH; // Transition to finish level
+      } else {
+        apple.update();
+      }
+      break;      
+    }
+    
+    case FINISH: { // ending screen
+        drawStoryTextBox("You fed the Spider and finished the game! Yay!");
+        beep.play();
+        break;
+
     }
     default:
       print("Invalid state found. Please try again");
@@ -246,11 +278,10 @@ void switchLevel() {
 }
 
 
-
 // Draw level 1 text box
 void displayLevelOne() {
   if (!monster.isDead) {
-    drawEventTextBox("OH NO! The monster is on your way! Press the Force Sensor on the robot to attack the monster.");
+    drawEventTextBox("OH NO! The monster is on your way! Press the Force Sensor to attack the monster.");
   } else {
     current_level = LEVEL_TWO;
   }
@@ -264,18 +295,3 @@ void loadSound() {
   combat = minim.loadFile(COMBAT);
   beep = minim.loadFile(BEEP);
 }
-
-
-/*
-//for playing the sound effect files
-void playSound(String file) {
-  AudioPlayer sound = null;
-  switch(file) {
-    case LASER:
-      sound = laser;
-      break;
-  
-    default: //do nothing
-  }
-  sound.play(0);
-}*/
