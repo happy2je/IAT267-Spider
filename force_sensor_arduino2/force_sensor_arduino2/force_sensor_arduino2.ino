@@ -1,103 +1,93 @@
-const int forceSensorPin = A0; // Assuming force sensor connected to analog pin A0
-const int lightPin = A1; //lightPin = pin A1
 
 #include <Servo.h>
 
-String readString;
-Servo servo;
+// Force sensor
+const int forceSensorPin = A0;
 
-//servo
+// Light sensor
+const int lightPin = A1;
+
+// Servomotor for door mechanism
+Servo servo;
 const int SERVO_PIN = 11;
 int servoPos = 0;
 
-
-//for ultrasonic
 // Ultrasonic sensor
 const int TRIG_PIN = 9;
 const int ECHO_PIN = 10;
-const int OPEN_TIME = 10000;
-
+const int OPEN_TIME = 10000; // 10 seconds
 long duration;
 int distance;
 
-
 void setup() {
+  // Set data rate to 9600 bps
   Serial.begin(9600);
+
+  // Force sensor setup
   pinMode(forceSensorPin, INPUT);
+  
+  // Servomotor setup
   servo.attach(SERVO_PIN);
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
 
-// Set servo to starting position
+  // Set servo to starting position of 0 degrees
   servo.write(0);
   delay(20);
-
-
 }
 
 void loop() {
+  // Read force sensor and light sensor values
   int forceValue = analogRead(forceSensorPin);
   int lightValue = analogRead(lightPin);
-  lightValue = lightValue/4;
+  lightValue /= 4; // Scale light sensor value down from 0-1023 to 0-255
 
-    // Clears the TRIG_PIN
+  // Clear the TRIG_PIN of the ultrasonic sensor
   digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(2);
 
-  
-  // Serial.print("Force Sensor Value: ");
-  Serial.print("a"); //character 'a' will delimit the reading from the force sensor
+  // Send values to Serial for processing
+
+  // 'a' packet - force sensor value
+  Serial.print("a"); // Character 'a' will delimit the reading from the force sensor
   Serial.print(forceValue);
   Serial.print("a");
   Serial.println();
-  //'a' packet - force sensor ends
 
-  //'b' packet starts
+  // 'b' packet starts - light sensor value
   Serial.print("b");
   Serial.print(lightValue);
   Serial.print("b");
   Serial.println();
-  //'b' packet ends
 
+  /* Get ultrasonic sensor distance */ 
 
-  Serial.print("c");
-// Sets the TRIG_PIN on HIGH state for 10 micro seconds
+  // Sets the TRIG_PIN on HIGH state for 10 micro seconds
   digitalWrite(TRIG_PIN, HIGH);
   delayMicroseconds(10);
   digitalWrite(TRIG_PIN, LOW);
 
-  // Reads the ECHO_PIN, returns the sound wave travel time in microseconds
+  // Reads the ECHO_PIN and returns the sound wave travel time in microseconds
   duration = pulseIn(ECHO_PIN, HIGH);
 
-  // Calculate and print distance in cm
+  // Calculate the distance in cm
   distance = duration * 0.034 / 2;
+
+  // 'c' packet - ultrasonic sensor value
+  Serial.print("c");
   Serial.print(distance);
-
-
   Serial.print("c");
   Serial.println();
 
-  Serial.print("d");
-    String message = Serial.readStringUntil('\n');
-    if (message.equals("trigger_servo")) {
-    // Trigger servo to 180 degrees if it's within distance range and back to 0 after x seconds
-//  if (distance <= 10 && distance >= 0) {
+  // Trigger servo to 70 degrees if it's within distance range and back to 0 after 10 seconds
+  String message = Serial.readStringUntil('\n');
+  if (message.equals("trigger_servo")) {
     servo.write(70);
-    //println("Servo triggered at distance: ");
-    // println(distance);
     delay(OPEN_TIME);
     servo.write(0);
-    // delay(20); 
   }
-  Serial.print("d");
-  Serial.println();
 
-  Serial.print("&"); //denotes the end from the sensors
-  delay(100); //wait 100ms for next reading 
-
-
-
-
-
+  // End point for packets being sent
+  Serial.print("&");
+  delay(100);
 }
-

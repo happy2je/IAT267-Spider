@@ -2,7 +2,7 @@ class Monster {
   final int ANIMATION_SPEED = 500; // monster animation speed in milliseconds
   final int HEALTH_BAR_WIDTH = 900;
   final int HEALTH_BAR_HEIGHT = 40;
-  final int MONSTER_RESISTANCE = 50; //use this to make the monster stronger
+  final int MONSTER_RESISTANCE = 50;
   
   PVector pos, dim;
   boolean isDead;

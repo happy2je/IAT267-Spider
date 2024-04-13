@@ -1,16 +1,16 @@
 class Apple {
-  final int ANIMATION_SPEED = 500; // monster animation speed in milliseconds
+  // Constants
   final int HEALTH_BAR_WIDTH = 900;
   final int HEALTH_BAR_HEIGHT = 40;
-  final int APPLE_RESISTANCE = 200; //use this to make the monster stronger
+  final int APPLE_RESISTANCE = 200;
   
   PVector pos, dim;
   boolean isDead;
   PImage movement1;
   PImage movement2;
-    PImage movement3;
+  PImage movement3;
+  PImage currentImg;
   int currentHealth;
-  PImage currentImg = movement1;
   
   // Constructor
   Apple(PVector pos) {
@@ -22,19 +22,20 @@ class Apple {
     movement1 = loadImage("data/apple1.png");
     movement2 = loadImage("data/apple2.png");    
     movement3 = loadImage("data/apple3.png");
+
+    currentImg = movement1;
   }
 
   void update() {
-    // Draws the monster and health if it is not dead
+    // Draws the apple and health if it is not dead
     if (!isDead) {
       drawHealthBar();
       drawCharacter();
     }
   }
   
-  // Monster takes damage  
+  // Apple gets eaten
   void inflictDamage(int damage) {
-    //beep.play();
     damage /= APPLE_RESISTANCE;
     currentHealth -= damage;
     
@@ -43,21 +44,13 @@ class Apple {
     }
   }
   
-  // Draws the monster with alternating frames
+  // Draws the apple
   void drawCharacter() {
     // Pushes the current transformation matrix onto the matrix stack
     pushMatrix();
     
-    // Draw the monster
     translate(pos.x, pos.y);    
     imageMode(CENTER);
-
-    // Change the monster frames every ANIMATION_SPEED ms
-    //if ((millis() / ANIMATION_SPEED) % 2 == 0) {
-    //  currentImg = movement1;
-    //} else {
-    //  currentImg = movement2;
-    //}
     image(currentImg, 0, 0, dim.x, dim.y);
     
     // Pops the current transformation matrix off the matrix stack
@@ -87,7 +80,7 @@ class Apple {
       fill(255, 0, 0); // red
     }
     
-    // Draw the current health bar (current monster life)
+    // Draw the current health bar (current apple life)
     if (currentHealth > 0) {
       rect(0, 0, currentHealth, HEALTH_BAR_HEIGHT);
     }
