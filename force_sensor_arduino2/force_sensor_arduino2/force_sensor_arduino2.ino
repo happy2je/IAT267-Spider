@@ -1,6 +1,5 @@
 const int forceSensorPin = A0; // Assuming force sensor connected to analog pin A0
 const int lightPin = A1; //lightPin = pin A1
-const int threshold = 10;     // Adjust this threshold value according to your sensor and setup
 
 #include <Servo.h>
 
